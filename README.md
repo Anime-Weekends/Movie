@@ -166,7 +166,7 @@ Report Bugs, Give Feature Requests at https://github.com/Sachinanand99/File-Shar
 ### Credits
 
 - Thanks To Dan For His Awsome [Libary](https://github.com/pyrogram/pyrogram)
-- Thanks to everyone who is on this awesome opensource project.
+- Thanks to everyone who is on this awesome Paid project.
 
 ##
 
