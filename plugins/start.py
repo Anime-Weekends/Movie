@@ -26,8 +26,9 @@ async def start_command(client: Client, message: Message):
             await add_user(id)
         except:
             pass
+
     verify_status = await get_verify_status(id)
-    
+
     if USE_SHORTLINK and (not U_S_E_P):
         for i in range(1):
             if id in ADMINS:
@@ -42,7 +43,7 @@ async def start_command(client: Client, message: Message):
                 if verify_status["link"] == "":
                     reply_markup = None
                 await message.reply(f"Your token successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)} ⏳", reply_markup=reply_markup, protect_content=False, quote=True)
-    
+
     if len(message.text) > 7:
         for i in range(1):
             if USE_SHORTLINK and (not U_S_E_P):
@@ -96,36 +97,37 @@ async def start_command(client: Client, message: Message):
                 await temp_msg.delete()
                 snt_msgs = []
                 for msg in messages:
-                    if bool(CUSTOM_CAPTION) & bool(msg.document):
-                        caption = CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html, filename=msg.document.file_name)
+                    original_caption = msg.caption.html if msg.caption else ""
+                    if CUSTOM_CAPTION:
+                        caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
                     else:
-                        caption = "" if not msg.caption else msg.caption.html   
+                        caption = original_caption   
                     reply_markup = None 
                     try:    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        await asyncio.sleep(0.5)
+                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                        await asyncio.sleep(0.5)    
                         snt_msgs.append(snt_msg)    
-                    except FloodWait as e:
+                    except FloodWait as e:  
                         await asyncio.sleep(e.x)    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        snt_msgs.append(snt_msg)
-                    except:
+                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode= ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                        snt_msgs.append(snt_msg)    
+                    except: 
                         pass
                 if SECONDS == 0:
                     return
                 notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
-                await asyncio.sleep(SECONDS)
-                for snt_msg in snt_msgs:
-                    try:
-                        await snt_msg.delete()
-                    except:
-                        pass
-                await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")
+                await asyncio.sleep(SECONDS)    
+                for snt_msg in snt_msgs:    
+                    try:    
+                        await snt_msg.delete()  
+                    except: 
+                        pass    
+                await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
                 return
             if U_S_E_P:
                 if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
                     await update_verify_status(id, is_verified=False)
-    
+
             if (not U_S_E_P) or (id in ADMINS) or (verify_status['is_verified']):
                 if len(argument) == 3:
                     try:
@@ -157,33 +159,34 @@ async def start_command(client: Client, message: Message):
                 await temp_msg.delete()
                 snt_msgs = []
                 for msg in messages:
-                    if bool(CUSTOM_CAPTION) & bool(msg.document):
-                        caption = CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html, filename=msg.document.file_name)
+                    original_caption = msg.caption.html if msg.caption else ""
+                    if CUSTOM_CAPTION:
+                        caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
                     else:
-                        caption = "" if not msg.caption else msg.caption.html
+                        caption = original_caption  
                     reply_markup = None 
                     try:    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        await asyncio.sleep(0.5)
+                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                        await asyncio.sleep(0.5)    
                         snt_msgs.append(snt_msg)    
-                    except FloodWait as e:
-                        await asyncio.sleep(e.x)
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        snt_msgs.append(snt_msg)
-                    except:
-                        pass
+                    except FloodWait as e:  
+                        await asyncio.sleep(e.x)    
+                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode= ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                        snt_msgs.append(snt_msg)    
+                    except: 
+                        pass    
             try:
                 if snt_msgs:
                     if SECONDS == 0:
                         return
                     notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
-                    await asyncio.sleep(SECONDS)
-                    for snt_msg in snt_msgs:
-                        try:
-                            await snt_msg.delete()
-                        except:
-                            pass
-                    await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")
+                    await asyncio.sleep(SECONDS)    
+                    for snt_msg in snt_msgs:    
+                        try:    
+                            await snt_msg.delete()  
+                        except: 
+                            pass    
+                    await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
                     return
             except:
                 newbase64_string = await encode(f"sav-ory-{_string}")
@@ -208,7 +211,7 @@ async def start_command(client: Client, message: Message):
                     ]
                 await message.reply(f"Total clicks {clicks}. Here is your link 👇.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
                 return
-    
+
     for i in range(1):
         if USE_SHORTLINK and (not U_S_E_P):
             if USE_SHORTLINK: 
@@ -226,9 +229,8 @@ async def start_command(client: Client, message: Message):
                 ]
             ]
         )
-        await message.reply_photo(
-            photo=START_PIC,
-            caption=START_MSG.format(
+        await message.reply_text(
+            text=START_MSG.format(
                 first=message.from_user.first_name,
                 last=message.from_user.last_name,
                 username=None if not message.from_user.username else '@' + message.from_user.username,
@@ -236,9 +238,10 @@ async def start_command(client: Client, message: Message):
                 id=message.from_user.id
             ),
             reply_markup=reply_markup,
-            message_effect_id=5104841245755180586  # 🔥
+            message_effect_id=5104841245755180586  # Add the effect ID here
         )
-    
+        return
+
     if USE_SHORTLINK and (not U_S_E_P): 
         if id in ADMINS:
             return
