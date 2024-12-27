@@ -38,7 +38,7 @@ PORT = os.environ.get("PORT", "8080")
 DB_URL = os.environ.get("DB_URL", "mongodb+srv://jeffysamaweekends:jeffysamaweekends@cluster0.ulyfw.mongodb.net/?retryWrites=true&w=majority")
 #your database name
 DB_NAME = os.environ.get("DB_NAME", "WeekendsMovie1")
-JOIN_REQS_DB = os.environ.get("JOIN_REQS_DB", DB_URI)
+JOIN_REQS_DB = os.environ.get("JOIN_REQS_DB", DB_URL)
 
 #for creating telegram thread for bot to improve performance of the bot
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "60"))
