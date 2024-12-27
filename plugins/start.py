@@ -237,8 +237,6 @@ async def start_command(client: Client, message: Message):
             reply_markup=reply_markup,
             message_effect_id=5104841245755180586  # 🔥
         )
-        except Exception as e:
-            print(e)
     
     if USE_SHORTLINK and (not U_S_E_P): 
         if id in ADMINS:
