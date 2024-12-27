@@ -207,5 +207,7 @@ async def increasepremtime(user_id : int, timeforprem : int):
         realtime = 86400*31*12
     await update_verify_status(user_id, is_verified=True, verified_time=time.time()+realtime)
 
-subscribed = filters.create(is_subscribed)
+subscribed1 = filters.create(is_subscribed1)
 subscribed2 = filters.create(is_subscribed2)
+subscribed3 = filters.create(is_subscribed3)
+subscribed4 = filters.create(is_subscribed4)
