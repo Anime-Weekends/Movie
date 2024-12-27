@@ -274,34 +274,21 @@ REPLY_ERROR = """<code>Use this command as a replay to any telegram message with
 
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
-    if FORCE_SUB_CHANNEL and FORCE_SUB_CHANNEL2:
-        buttons = [
-            [
-                InlineKeyboardButton(
-                    "Join Channel 👆",
-                    url=client.invitelink
-                ),
-                InlineKeyboardButton(
-                    "Join Channel 👆",
-                    url=client.invitelink2
-                ),
-            ]
+    buttons = [
+        [
+            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url=client.invitelink),
+            InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
+        ],
+        [
+            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url=client.invitelink3),
+            InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
         ]
-    elif FORCE_SUB_CHANNEL:
-        buttons = [
-            [
-                InlineKeyboardButton(
-                    "Join Channel 👆",
-                    url=client.invitelink
-                )
-            ]
-        ]
-    
+    ]
     try:
         buttons.append(
             [
                 InlineKeyboardButton(
-                    text='Try Again 🥺',
+                    text='• ɴᴏᴡ ᴄʟɪᴄᴋ ʜᴇʀᴇ •',
                     url=f"https://t.me/{client.username}?start={message.command[1]}"
                 )
             ]
@@ -312,15 +299,15 @@ async def not_joined(client: Client, message: Message):
     await message.reply_photo(
         photo=FORCE_PIC,
         caption=FORCE_MSG.format(
-            first=message.from_user.first_name,
-            last=message.from_user.last_name,
-            username=None if not message.from_user.username else '@' + message.from_user.username,
-            mention=message.from_user.mention,
-            id=message.from_user.id
-        ),
-        reply_markup=InlineKeyboardMarkup(buttons),
-        message_effect_id=5104841245755180586  # Add the effect ID here
-    )
+        first=message.from_user.first_name,
+        last=message.from_user.last_name,
+        username=None if not message.from_user.username else '@' + message.from_user.username,
+        mention=message.from_user.mention,
+        id=message.from_user.id
+    ),
+    reply_markup=InlineKeyboardMarkup(buttons),
+    message_effect_id=5104841245755180586  # Add the effect ID here
+)
 
 @Bot.on_message(filters.command('ch2l') & filters.private)
 async def gen_link_encoded(client: Bot, message: Message):
