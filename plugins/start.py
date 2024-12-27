@@ -13,6 +13,7 @@ from bot import Bot
 from config import *
 from helper_func import *
 from database.database import add_admin, add_user, del_admin, del_user, full_adminbase, full_userbase, gen_new_count, get_clicks, inc_count, new_link, present_admin, present_hash, present_user
+from database.join_reqs import *
 
 SECONDS = TIME 
 TUT_VID = f"{TUT_VID}"
