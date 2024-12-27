@@ -74,7 +74,8 @@ U_S_E_P = True if (True if os.environ.get('U_S_E_P', "TRUE") == "TRUE" else Fals
 TUT_VID = os.environ.get("TUT_VID","https://t.me/How_to_Download_7x/32")
 
 
-
+START_PIC = os.environ.get("START_PIC", "https://telegra.ph/file/ec17880d61180d3312d6a.jpg")
+FORCE_PIC = os.environ.get("FORCE_PIC", "https://telegra.ph/file/e292b12890b8b4b9dcbd1.jpg")
 
 
 #Payment to remove the token system
