@@ -4,6 +4,7 @@ import random
 import sys
 import time
 import string
+import string as rohit
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
@@ -194,7 +195,6 @@ async def start_command(client: Client, message: Message):
                         await gen_new_count(newbase64_string)
                     except:
                         pass
-                clicks = await get_clicks(newbase64_string)
                 newLink = f"https://t.me/{client.username}?start={newbase64_string}"
                 link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'{newLink}')
                 if USE_PAYMENT:
@@ -228,8 +228,9 @@ async def start_command(client: Client, message: Message):
                 ]
             ]
         )
-        await message.reply_text(
-            text=START_MSG.format(
+        await message.reply_photo(
+            photo=START_PIC,
+            caption=START_MSG.format(
                 first=message.from_user.first_name,
                 last=message.from_user.last_name,
                 username=None if not message.from_user.username else '@' + message.from_user.username,
@@ -246,7 +247,7 @@ async def start_command(client: Client, message: Message):
             return
         verify_status = await get_verify_status(id)
         if not verify_status['is_verified']:
-            token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+            token = ''.join(random.choices(rohit.ascii_letters + string.digits, k=10))
             await update_verify_status(id, verify_token=token, link="")
             link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'https://telegram.dog/{client.username}?start=verify_{token}')
             if USE_PAYMENT:
