@@ -10,9 +10,7 @@ from bot import Bot
 
 dbclient = pymongo.MongoClient(DB_URI)
 database = dbclient[DB_NAME]
-
 
-collection = database['premium-users']
 
 default_verify = {
     'is_verified': False,
