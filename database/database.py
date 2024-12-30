@@ -4,7 +4,7 @@
 import time
 import pymongo, os
 import motor
-from config import DB_URI, DB_NAME
+from config import DB_URL, DB_NAME
 from bot import Bot
 
 
@@ -34,8 +34,8 @@ def new_user(id):
 
 class Rohit:
 
-    def __init__(self, DB_URI, DB_NAME):
-        self.dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URI)
+    def __init__(self, DB_URL, DB_NAME):
+        self.dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URL)
         self.database = self.dbclient[DB_NAME]
 
         self.channel_data = self.database['channels']
