@@ -365,4 +365,4 @@ class Rohit:
         await self.store_reqLink_data.delete_one({'_id': channel_id})
 
 
-db = Rohit(DB_URI, DB_NAME)
+db = Rohit(DB_URL, DB_NAME)
