@@ -8,7 +8,7 @@ from config import DB_URL, DB_NAME
 from bot import Bot
 
 
-dbclient = pymongo.MongoClient(DB_URI)
+dbclient = pymongo.MongoClient(DB_URL)
 database = dbclient[DB_NAME]
 
 
