@@ -104,126 +104,55 @@ async def start_command(client: Client, message: Message):
                     return
                 await temp_msg.delete()
 
+                # Initialize CHNL_BTN
                 CHNL_BTN = None
-                
+
+                # Fetching the values simultaneously with asyncio.gather
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
-                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
-            )
-            if CHNL_BTN:
-                button_name, button_link = await db.get_channel_button_link()
+                    db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
+                )
 
-            for idx, msg in enumerate(messages):
-                original_caption = msg.caption.html if msg.caption else ""
-                if CUSTOM_CAPTION and msg.document:
-                    caption = CUSTOM_CAPTION.format(previouscaption=original_caption, filename=msg.document.file_name)
-                elif HIDE_CAPTION and (msg.document or msg.audio):
-                    caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
-                else:
-                    caption = original_caption
-
+                # Safeguard CHNL_BTN to ensure it is not None
                 if CHNL_BTN:
-                    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=button_name, url=button_link)]]) if (msg.document or msg.photo or msg.video or msg.audio) else None
-                else:
-                    reply_markup = msg.reply_markup
+                    button_name, button_link = await db.get_channel_button_link()
 
-                try:
-                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
-                    await asyncio.sleep(0.1)
-
-                    if AUTO_DEL:
-                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
-                        if idx == len(messages) - 1:
-                            last_message = copied_msg
-
-                except FloodWait as e:
-                    await asyncio.sleep(e.x)
-                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
-                    await asyncio.sleep(0.1)
-
-                    if AUTO_DEL:
-                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
-                        if idx == len(messages) - 1:
-                            last_message = copied_msg
-
-            if AUTO_DEL and last_message:
-                asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
-                
-            if U_S_E_P:
-                if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
-                    await db.update_verify_status(id, is_verified=False)
-
-            if (not U_S_E_P) or (is_admin) or (verify_status['is_verified']):
-                if len(argument) == 3:
-                    try:
-                        start = int(int(argument[1]) / abs(client.db_channel.id))
-                        end = int(int(argument[2]) / abs(client.db_channel.id))
-                    except:
-                        return
-                    if start <= end:
-                        ids = range(start, end + 1)
+                for idx, msg in enumerate(messages):
+                    original_caption = msg.caption.html if msg.caption else ""
+                    if CUSTOM_CAPTION and msg.document:
+                        caption = CUSTOM_CAPTION.format(previouscaption=original_caption, filename=msg.document.file_name)
+                    elif HIDE_CAPTION and (msg.document or msg.audio):
+                        caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
                     else:
-                        ids = []
-                        i = start
-                        while True:
-                            ids.append(i)
-                            i -= 1
-                            if i < end:
-                                break
-                elif len(argument) == 2:
+                        caption = original_caption
+
+                    # Use CHNL_BTN for reply_markup if it exists
+                    if CHNL_BTN:
+                        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=button_name, url=button_link)]]) if (msg.document or msg.photo or msg.video or msg.audio) else None
+                    else:
+                        reply_markup = msg.reply_markup
+
                     try:
-                        ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-                    except:
-                        return
-                temp_msg = await message.reply("Please wait... 🫷")
-                try:
-                    messages = await get_messages(client, ids)
-                except:
-                    await message.reply_text("Something went wrong..! 🥲")
-                    return
-                await temp_msg.delete()
-                CHNL_BTN = None
-                AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
-                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
-            )
-            if CHNL_BTN:
-                button_name, button_link = await db.get_channel_button_link()
+                        copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
+                        await asyncio.sleep(0.1)
 
-            for idx, msg in enumerate(messages):
-                original_caption = msg.caption.html if msg.caption else ""
-                if CUSTOM_CAPTION and msg.document:
-                    caption = CUSTOM_CAPTION.format(previouscaption=original_caption, filename=msg.document.file_name)
-                elif HIDE_CAPTION and (msg.document or msg.audio):
-                    caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
-                else:
-                    caption = original_caption
+                        if AUTO_DEL:
+                            asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+                            if idx == len(messages) - 1:
+                                last_message = copied_msg
 
-                if CHNL_BTN:
-                    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=button_name, url=button_link)]]) if (msg.document or msg.photo or msg.video or msg.audio) else None
-                else:
-                    reply_markup = msg.reply_markup
+                    except FloodWait as e:
+                        await asyncio.sleep(e.x)
+                        copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
+                        await asyncio.sleep(0.1)
 
-                try:
-                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
-                    await asyncio.sleep(0.1)
+                        if AUTO_DEL:
+                            asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+                            if idx == len(messages) - 1:
+                                last_message = copied_msg
 
-                    if AUTO_DEL:
-                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
-                        if idx == len(messages) - 1:
-                            last_message = copied_msg
+                if AUTO_DEL and last_message:
+                    asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
 
-                except FloodWait as e:
-                    await asyncio.sleep(e.x)
-                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
-                    await asyncio.sleep(0.1)
-
-                    if AUTO_DEL:
-                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
-                        if idx == len(messages) - 1:
-                            last_message = copied_msg
-
-            if AUTO_DEL and last_message:
-                asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
-             
                 newbase64_string = await encode(f"sav-ory-{_string}")
                 newLink = f"https://t.me/{client.username}?start={newbase64_string}"
                 link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'{newLink}')
@@ -294,7 +223,6 @@ async def start_command(client: Client, message: Message):
             await message.reply(f"Your Ads token is expired, refresh your token and try again. \n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for {get_exp_time(VERIFY_EXPIRE)} after passing the ad", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
             return
     return
-
     
 #=====================================================================================#
 
