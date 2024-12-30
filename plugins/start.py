@@ -24,8 +24,6 @@ from datetime import datetime, timedelta
 from pytz import timezone
 
 
-
-
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
@@ -153,6 +151,7 @@ async def start_command(client: Client, message: Message):
                 if AUTO_DEL and last_message:
                     asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
 
+                # Create and share the shortened link
                 newbase64_string = await encode(f"sav-ory-{_string}")
                 newLink = f"https://t.me/{client.username}?start={newbase64_string}"
                 link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'{newLink}')
@@ -170,6 +169,7 @@ async def start_command(client: Client, message: Message):
                 await message.reply(f"Total clicks {clicks}. Here is your link 👇.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
                 return
 
+    # Handle the initial /start message
     for i in range(1):
         if USE_SHORTLINK and (not U_S_E_P):
             if USE_SHORTLINK: 
