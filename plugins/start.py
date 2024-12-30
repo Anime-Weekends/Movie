@@ -419,10 +419,10 @@ async def send_text(client: Bot, message: Message):
                 await broadcast_msg.copy(chat_id)
                 successful += 1
             except UserIsBlocked:
-                await del_user(chat_id)
+                await db.del_user(chat_id)
                 blocked += 1
             except InputUserDeactivated:
-                await del_user(chat_id)
+                await db.del_user(chat_id)
                 deleted += 1
             except:
                 unsuccessful += 1
