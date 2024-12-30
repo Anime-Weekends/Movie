@@ -1,19 +1,21 @@
 # --- For-Bot-Working --------- #
-pyrofork
+pyrogram
+pyrofork==2.3.38
 TgCrypto
 pyromod==1.5
-python-dotenv
+schedule
+APscheduler
 # --- For-Database ------------ #
 pymongo
 motor
-umongo
-marshmallow
 dnspython
+# --- For-Web-Response ------- #
+aiohttp
+python-dotenv
 # --- For-Web-Response ------- #
 pytz
 requests
 bs4
 shortzy
-aiohttp
 aiofiles
 asyncio
