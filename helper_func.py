@@ -4,7 +4,7 @@ import re
 import asyncio
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from config import FORCE_SUB_CHANNEL, FORCE_SUB_CHANNEL2, FORCE_SUB_CHANNEL3, ADMINS, FORCE_SUB_CHANNEL4
+from config import *
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.errors import FloodWait
 from shortzy import Shortzy
@@ -12,78 +12,7 @@ import requests
 import time
 from datetime import datetime
 from database.database import user_data, db_verify_status, db_update_verify_status
-from config import JOIN_REQS_DB
-from database.join_reqs import JoinReqs
 import pytz
-
-db = JoinReqs
-
-async def is_subscribed1(filter, client, update):
-    if not FORCE_SUB_CHANNEL:
-        return True
-    user_id = update.from_user.id
-    if user_id in ADMINS:
-        return True
-    try:
-        member1 = await client.get_chat_member(chat_id = FORCE_SUB_CHANNEL, user_id = user_id)
-    except UserNotParticipant:
-        return False
-
-    if not member1.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-        return False
-    else:
-        return True
-
-async def is_subscribed2(filter, client, update):
-    if not FORCE_SUB_CHANNEL2:
-        return True
-    user_id = update.from_user.id
-    if user_id in ADMINS:
-        return True
-    try:
-        member2 = await client.get_chat_member(chat_id = FORCE_SUB_CHANNEL2, user_id = user_id)
-    except UserNotParticipant:
-        return False
-
-    if not member2.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-        return False
-    else:
-        return True
-
-async def is_subscribed3(filter, client, update):
-    if not FORCE_SUB_CHANNEL4:
-        return True
-    user_id = update.from_user.id
-    user = await db().get_user(update.from_user.id)
-    if user_id in ADMINS:
-        return True
-    if user and user["user_id"] == update.from_user.id:
-        return True
-    try:
-        member3 = await client.get_chat_member(chat_id = FORCE_SUB_CHANNEL4, user_id = user_id)
-    except UserNotParticipant:
-        return False
-
-    if not member3.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-        return False
-    else:
-        return True
-
-async def is_subscribed4(filter, client, update):
-    if not FORCE_SUB_CHANNEL3:
-        return True
-    user_id = update.from_user.id
-    if user_id in ADMINS:
-        return True
-    try:
-        member4 = await client.get_chat_member(chat_id = FORCE_SUB_CHANNEL3, user_id = user_id)
-    except UserNotParticipant:
-        return False
-
-    if not member4.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-        return False
-    else:
-        return True
 
 
 async def encode(string):
