@@ -219,9 +219,7 @@ async def start_command(client: Client, message: Message):
             if AUTO_DEL and last_message:
                 asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
              
-            except:
                 newbase64_string = await encode(f"sav-ory-{_string}")
-                pass
                 newLink = f"https://t.me/{client.username}?start={newbase64_string}"
                 link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'{newLink}')
                 if USE_PAYMENT:
