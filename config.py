@@ -9,14 +9,6 @@ import logging
 
 from logging.handlers import RotatingFileHandler
 
-#force sub channel id, if you want enable force sub
-FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1002076655534"))
-FORCE_SUB_CHANNEL2 = int(os.environ.get("FORCESUB_CHANNEL2", "-1002397319343"))
-FORCE_SUB_CHANNEL3 = int(os.environ.get("FORCE_SUB_CHANNEL3", "-1002006075403"))
-#4 It is requested fsub
-FORCE_SUB_CHANNEL4 = int(os.environ.get("FORCE_SUB_CHANNEL4", "-1002349457826"))
-
-
 #bot stats
 BOT_STATS_TEXT = os.environ.get("BOTS_STATS_TEXT","<b>BOT UPTIME 🌺</b>\n{uptime}")
 #send custom message when user interact with bot
@@ -38,7 +30,6 @@ PORT = os.environ.get("PORT", "8080")
 DB_URL = os.environ.get("DB_URL", "mongodb+srv://jeffysamaweekends:jeffysamaweekends@cluster0.ulyfw.mongodb.net/?retryWrites=true&w=majority")
 #your database name
 DB_NAME = os.environ.get("DB_NAME", "WeekendsMovie1")
-JOIN_REQS_DB = os.environ.get("JOIN_REQS_DB", DB_URL)
 
 #for creating telegram thread for bot to improve performance of the bot
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "60"))
@@ -104,25 +95,12 @@ PRICE5 = os.environ.get("PRICE5", "599 rs")
 #force message for joining the channel
 FORCE_MSG = os.environ.get("FORCE_MSG", "Hello {first}\n\n<b>You need to join in my Channel/Group to use me\n\nKindly Please join Channel</b> 🥺")
 #custom caption 
-CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
-#protected content so that no files can be sent from the bot to anyone. recommended False
-# TRUE for yes FALSE if no
-PROTECT_CONTENT = True if os.environ.get("PROTECT_CONTENT", "FALSE") == "TRUE" else False
-#used if you dont need buttons on database channel.
+
 # True for yes False if no
 DISABLE_CHANNEL_BUTTON = True if os.environ.get("DISABLE_CHANNEL_BUTTON", "TRUE") == "TRUE" else False
 #you can add admin inside the bot(bug right now will fix later)
 
 #add admins with space seperated
-# 7195990000 289371935 248979023
-ADMIN_LIST = os.environ.get("ADMINS", "").split()
-
-
-
-
-#no need to add anything from now on
-ADMINS = [int(admin) for admin in ADMIN_LIST if admin.isdigit()]
-ADMINS.append(OWNER_ID)
 
 
 LOG_FILE_NAME = "logs.txt"
