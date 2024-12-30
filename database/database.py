@@ -3,7 +3,7 @@
 
 import time
 import pymongo, os
-import motor
+import motor, asyncio
 from config import DB_URL, DB_NAME
 from bot import Bot
 
