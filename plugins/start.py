@@ -21,25 +21,25 @@ TUT_VID = f"{TUT_VID}"
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    if not await present_user(id):
+    if not await db.present_user(id):
         try:
-            await add_user(id)
+            await db.add_user(id)
         except:
             pass
 
-    verify_status = await get_verify_status(id)
+    verify_status = await db.get_verify_status(id)
 
     if USE_SHORTLINK and (not U_S_E_P):
         for i in range(1):
-            if id in ADMINS:
+            if is_admin:
                 continue
             if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
-                await update_verify_status(id, is_verified=False)
+                await db.update_verify_status(id, is_verified=False)
             if "verify_" in message.text:
                 _, token = message.text.split("_", 1)
                 if verify_status['verify_token'] != token:
                     return await message.reply("Your token is invalid or Expired ⌛. Try again by clicking /start")
-                await update_verify_status(id, is_verified=True, verified_time=time.time())
+                await db.update_verify_status(id, is_verified=True, verified_time=time.time())
                 if verify_status["link"] == "":
                     reply_markup = None
                 await message.reply(f"Your token successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)} ⏳", reply_markup=reply_markup, protect_content=False, quote=True)
@@ -48,7 +48,7 @@ async def start_command(client: Client, message: Message):
         for i in range(1):
             if USE_SHORTLINK and (not U_S_E_P):
                 if USE_SHORTLINK: 
-                    if id not in ADMINS:
+                    if not is_admin:
                         try:
                             if not verify_status['is_verified']:
                                 continue
@@ -126,9 +126,9 @@ async def start_command(client: Client, message: Message):
                 return
             if U_S_E_P:
                 if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
-                    await update_verify_status(id, is_verified=False)
+                    await db.update_verify_status(id, is_verified=False)
 
-            if (not U_S_E_P) or (id in ADMINS) or (verify_status['is_verified']):
+            if (not U_S_E_P) or (is_admin) or (verify_status['is_verified']):
                 if len(argument) == 3:
                     try:
                         start = int(int(argument[1]) / abs(client.db_channel.id))
@@ -190,11 +190,7 @@ async def start_command(client: Client, message: Message):
                     return
             except:
                 newbase64_string = await encode(f"sav-ory-{_string}")
-                if not await present_hash(newbase64_string):
-                    try:
-                        await gen_new_count(newbase64_string)
-                    except:
-                        pass
+     
                 newLink = f"https://t.me/{client.username}?start={newbase64_string}"
                 link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'{newLink}')
                 if USE_PAYMENT:
@@ -214,7 +210,7 @@ async def start_command(client: Client, message: Message):
     for i in range(1):
         if USE_SHORTLINK and (not U_S_E_P):
             if USE_SHORTLINK: 
-                if id not in ADMINS:
+                if not is_admin:
                     try:
                         if not verify_status['is_verified']:
                             continue
@@ -245,10 +241,10 @@ async def start_command(client: Client, message: Message):
     if USE_SHORTLINK and (not U_S_E_P): 
         if id in ADMINS:
             return
-        verify_status = await get_verify_status(id)
+        verify_status = await db.get_verify_status(id)
         if not verify_status['is_verified']:
             token = ''.join(random.choices(rohit.ascii_letters + string.digits, k=10))
-            await update_verify_status(id, verify_token=token, link="")
+            await db.update_verify_status(id, verify_token=token, link="")
             link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'https://telegram.dog/{client.username}?start=verify_{token}')
             if USE_PAYMENT:
                 btn = [
