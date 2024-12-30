@@ -6,6 +6,8 @@ import pymongo, os
 import motor, asyncio
 from config import DB_URL, DB_NAME
 from bot import Bot
+import motor.motor_asyncio  # Import the correct module
+
 
 
 dbclient = pymongo.MongoClient(DB_URL)
