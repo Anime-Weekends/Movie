@@ -274,43 +274,77 @@ REPLY_ERROR = """<code>Use this command as a replay to any telegram message with
 
 #=====================================================================================#
 
-@Bot.on_message(filters.command('start') & filters.private)
+# Create a global dictionary to store chat data
+chat_data_cache = {}
+
+@Bot.on_message(filters.command('start') & filters.private & ~banUser)
 async def not_joined(client: Client, message: Message):
-    buttons = [
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url=client.invitelink),
-            InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
-        ],
-        [
-            InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url=client.invitelink3),
-            InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
-        ]
-    ]
+    temp = await message.reply(f"<b>??</b>")
+
+    user_id = message.from_user.id
+
+    REQFSUB = await db.get_request_forcesub()
+    buttons = []
+    count = 0
+
     try:
-        buttons.append(
-            [
-                InlineKeyboardButton(
-                    text='• ɴᴏᴡ ᴄʟɪᴄᴋ ʜᴇʀᴇ •',
-                    url=f"https://t.me/{client.username}?start={message.command[1]}"
-                )
-            ]
-        )
-    except IndexError:
-        pass
+        for total, chat_id in enumerate(await db.get_all_channels(), start=1):
+            await message.reply_chat_action(ChatAction.PLAYING)
 
-    await message.reply_photo(
-        photo=FORCE_PIC,
-        caption=FORCE_MSG.format(
-        first=message.from_user.first_name,
-        last=message.from_user.last_name,
-        username=None if not message.from_user.username else '@' + message.from_user.username,
-        mention=message.from_user.mention,
-        id=message.from_user.id
-    ),
-    reply_markup=InlineKeyboardMarkup(buttons),
+            # Show the join button of non-subscribed Channels.....
+            if not await is_userJoin(client, user_id, chat_id):
+                try:
+                    # Check if chat data is in cache
+                    if chat_id in chat_data_cache:
+                        data = chat_data_cache[chat_id]  # Get data from cache
+                    else:
+                        data = await client.get_chat(chat_id)  # Fetch from API
+                        chat_data_cache[chat_id] = data  # Store in cache
+
+                    cname = data.title
+
+                    # Handle private channels and links
+                    if REQFSUB and not data.username: 
+                        link = await db.get_stored_reqLink(chat_id)
+                        await db.add_reqChannel(chat_id)
+
+                        if not link:
+                            link = (await client.create_chat_invite_link(chat_id=chat_id, creates_join_request=True)).invite_link
+                            await db.store_reqLink(chat_id, link)
+                    else:
+                        link = data.invite_link
+
+                    # Add button for the chat
+                    buttons.append([InlineKeyboardButton(text=cname, url=link)])
+                    count += 1
+                    await temp.edit(f"<b>{'! ' * count}</b>")
+
+                except Exception as e:
+                    print(f"Can't Export Channel Name and Link..., Please Check If the Bot is admin in the FORCE SUB CHANNELS:\nProvided Force sub Channel:- {chat_id}")
+                    return await temp.edit(f"<b><i>! Eʀʀᴏʀ, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ ᴛᴏ sᴏʟᴠᴇ ᴛʜᴇ ɪssᴜᴇs @rohit_1888</i></b>\n<blockquote expandable><b>Rᴇᴀsᴏɴ:</b> {e}</blockquote>")
+
+        try:
+            buttons.append([InlineKeyboardButton(text='♻️ Tʀʏ Aɢᴀɪɴ', url=f"https://t.me/{client.username}?start={message.command[1]}")])
+        except IndexError:
+            pass
+
+        await message.reply_photo(
+            photo=FORCE_PIC,
+            caption=FORCE_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name,
+                username=None if not message.from_user.username else '@' + message.from_user.username,
+                mention=message.from_user.mention,
+                id=message.from_user.id
+            ),
+            reply_markup=InlineKeyboardMarkup(buttons),
     message_effect_id=5104841245755180586  # Add the effect ID here
-)
-
+        )
+    except Exception as e:
+        print(f"Error: {e}")  # Print the error message for debugging
+        # Optionally, send an error message to the user or handle further actions here
+        await temp.edit(f"<b><i>! Eʀʀᴏʀ, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ ᴛᴏ sᴏʟᴠᴇ ᴛʜᴇ ɪssᴜᴇs @rohit_1888</i></b>\n<blockquote expandable><b>Rᴇᴀsᴏɴ:</b> {e}</blockquote>")
+    
 @Bot.on_message(filters.command('ch2l') & filters.private)
 async def gen_link_encoded(client: Bot, message: Message):
     try:
@@ -328,17 +362,16 @@ async def gen_link_encoded(client: Bot, message: Message):
     return
         
 
-@Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
+@Bot.on_message(filters.command('users') & filters.private & is_admin)
 async def get_users(client: Bot, message: Message):
     msg = await client.send_message(chat_id=message.chat.id, text=WAIT_MSG)
-    users = await full_userbase()
-    await msg.edit(f"{len(users)} users are using this bot 👥")
-    return
+    users = await db.full_userbase()
+    await msg.edit(f"{len(users)} users are using this bot")
 
-@Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
+@Bot.on_message(filters.private & filters.command('broadcast') & is_admin)
 async def send_text(client: Bot, message: Message):
     if message.reply_to_message:
-        query = await full_userbase()
+        query = await db.full_userbase()
         broadcast_msg = message.reply_to_message
         total = 0
         successful = 0
@@ -404,7 +437,7 @@ async def check_ping_command(client: Bot, message: Message):
     return
 
 
-@Bot.on_message(filters.private & filters.command('restart') & filters.user(ADMINS))
+@Bot.on_message(filters.private & filters.command('restart') & filters.user(OWNER_ID))
 async def restart(client, message):
     msg = await message.reply_text(
         text="<i>Trying To Restarting.....</i>",
@@ -419,7 +452,7 @@ async def restart(client, message):
 
 
 if USE_PAYMENT:
-    @Bot.on_message(filters.command('add_prem') & filters.private & filters.user(ADMINS))
+    @Bot.on_message(filters.command('add_prem') & filters.private & is_admin)
     async def add_user_premium_command(client: Bot, message: Message):
         while True:
             try:
