@@ -14,6 +14,7 @@ from bot import Bot
 from config import *
 from helper_func import *
 from database.database import db
+from database.database import *
 
 SECONDS = TIME 
 TUT_VID = f"{TUT_VID}"
