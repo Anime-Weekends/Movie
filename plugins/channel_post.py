@@ -7,7 +7,7 @@ from bot import Bot
 from config import *
 from helper_func import *
 
-@Bot.on_message(filters.private & is_admin & ~filters.command(['start','users','broadcast','batch','genlink','stats','auth_secret','deauth_secret', 'auth', 'sbatch', 'exit', 'add_admin', 'del_admin', 'admins', 'add_prem', 'ping', 'restart', 'ch2l', 'cancel', 'total', 'clear']))
+@Bot.on_message(filters.private & is_admin & ~filters.command(['start','users','broadcast','batch','genlink','stats','auth_secret','deauth_secret', 'auth', 'sbatch', 'exit', 'add_admins', 'del_admins', 'admin_list', 'add_prem', 'ping', 'restart', 'ch2l', 'cancel', 'req_fsub', 'fsub_chnl', 'add_fsub', 'del_fsub']))
 async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Please Wait...! 🫷", quote = True)
     try:
