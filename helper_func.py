@@ -196,7 +196,70 @@ async def increasepremtime(user_id : int, timeforprem : int):
         realtime = 86400*31*12
     await update_verify_status(user_id, is_verified=True, verified_time=time.time()+realtime)
 
-subscribed1 = filters.create(is_subscribed1)
-subscribed2 = filters.create(is_subscribed2)
-subscribed3 = filters.create(is_subscribed3)
-subscribed4 = filters.create(is_subscribed4)
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#Check user subscription in Channels
+"""async def is_subscribed(filter, client, update):
+    Channel_ids = await db.get_all_channels()
+    
+    if not Channel_ids:
+        return True
+
+    user_id = update.from_user.id
+
+    if any([user_id == OWNER_ID, await db.admin_exist(user_id)]):
+        return True
+        
+    member_status = ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER
+    
+    REQFSUB = await db.get_request_forcesub()
+                    
+    for id in Channel_ids:
+        if not id:
+            continue
+            
+        try:
+            member = await client.get_chat_member(chat_id=id, user_id=user_id)
+        except UserNotParticipant:
+            member = None
+            if REQFSUB and await privateChannel(client, id):
+                if not await db.reqSent_user_exist(id, user_id):
+                    return False
+            else:
+                return False
+                
+        if member:
+            if member.status not in member_status:
+                if REQFSUB and await privateChannel(client, id):
+                    if not await db.reqSent_user_exist(id, user_id):
+                        return False
+                else:
+                    return False
+
+    return True"""
+
+#Check user subscription in Channels in More Simpler way
+"""async def is_subscribed(filter, client, update):
+    Channel_ids = await db.get_all_channels()
+    
+    if not Channel_ids:
+        return True
+
+    user_id = update.from_user.id
+
+    if any([user_id == OWNER_ID, await db.admin_exist(user_id)]):
+        return True
+
+    for ids in Channel_ids:
+        if not ids:
+            continue
+            
+        if not await is_userJoin(client, user_id, ids):
+            return False
+            
+    return True"""
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+subscribed = filters.create(is_subscribed)
+is_admin = filters.create(check_admin)
+banUser = filters.create(check_banUser)
