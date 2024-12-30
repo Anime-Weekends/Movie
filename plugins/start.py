@@ -393,73 +393,6 @@ async def auth_command(client: Bot, message: Message):
     return
 
 
-@Bot.on_message(filters.command('add_admin') & filters.private & filters.user(OWNER_ID))
-async def command_add_admin(client: Bot, message: Message):
-    while True:
-        try:
-            admin_id = await client.ask(text="Enter admin id 🔢\n /cancel to cancel : ",chat_id = message.from_user.id, timeout=60)
-        except Exception as e:
-            print(e)
-            return
-        if admin_id.text == "/cancel":
-            await admin_id.reply("Cancelled 😉!")
-            return
-        try:
-            await Bot.get_users(user_ids=admin_id.text, self=client)
-            break
-        except:
-            await admin_id.reply("❌ Error 😖\n\nThe admin id is incorrect.", quote = True)
-            continue
-    if not await present_admin(admin_id.text):
-        try:
-            await add_admin(admin_id.text)
-            await message.reply(f"Added admin <code>{admin_id.text}</code> 😼")
-            try:
-                await client.send_message(
-                    chat_id=admin_id.text,
-                    text=f"You are verified, ask the owner to add them to db channels. 😁"
-                )
-            except:
-                await message.reply("Failed to send invite. Please ensure that they have started the bot. 🥲")
-        except:
-            await message.reply("Failed to add admin. 😔\nSome error occurred.")
-    else:
-        await message.reply("admin already exist. 💀")
-    return
-
-
-@Bot.on_message(filters.command('del_admin') & filters.private  & filters.user(OWNER_ID))
-async def delete_admin_command(client: Bot, message: Message):
-    while True:
-        try:
-            admin_id = await client.ask(text="Enter admin id 🔢\n /cancel to cancel : ",chat_id = message.from_user.id, timeout=60)
-        except:
-            return
-        if admin_id.text == "/cancel":
-            await admin_id.reply("Cancelled 😉!")
-            return
-        try:
-            await Bot.get_users(user_ids=admin_id.text, self=client)
-            break
-        except:
-            await admin_id.reply("❌ Error\n\nThe admin id is incorrect.", quote = True)
-            continue
-    if await present_admin(admin_id.text):
-        try:
-            await del_admin(admin_id.text)
-            await message.reply(f"Admin <code>{admin_id.text}</code> removed successfully 😀")
-        except Exception as e:
-            print(e)
-            await message.reply("Failed to remove admin. 😔\nSome error occurred.")
-    else:
-        await message.reply("admin doesn't exist. 💀")
-    return
-
-@Bot.on_message(filters.command('admins')  & filters.private & filters.private)
-async def admin_list_command(client: Bot, message: Message):
-    admin_list = await full_adminbase()
-    await message.reply(f"Full admin list 📃\n<code>{admin_list}</code>")
-    return
 
 @Bot.on_message(filters.command('ping')  & filters.private)
 async def check_ping_command(client: Bot, message: Message):
@@ -471,7 +404,7 @@ async def check_ping_command(client: Bot, message: Message):
     return
 
 
-@Client.on_message(filters.private & filters.command('restart') & filters.user(ADMINS))
+@Bot.on_message(filters.private & filters.command('restart') & filters.user(ADMINS))
 async def restart(client, message):
     msg = await message.reply_text(
         text="<i>Trying To Restarting.....</i>",
