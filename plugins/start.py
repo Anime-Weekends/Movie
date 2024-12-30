@@ -1,23 +1,28 @@
 import asyncio
+import base64
+import logging
 import os
 import random
-import sys
-import time
-import string
+import re
+import string 
 import string as rohit
-from pyrogram import Client, filters
-from pyrogram.enums import ParseMode
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+import time
+from pyrogram import Client, filters, __version__
+from pyrogram.enums import ParseMode, ChatAction
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
-
+from plugins.autoDelete import auto_del_notification, delete_message
 from bot import Bot
 from config import *
 from helper_func import *
-from database.database import db
 from database.database import *
+from plugins.FORMATS import *
+from database.database import db
+from config import *
+from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid
+from datetime import datetime, timedelta
+from pytz import timezone
 
-SECONDS = TIME 
-TUT_VID = f"{TUT_VID}"
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
@@ -96,35 +101,49 @@ async def start_command(client: Client, message: Message):
                     await message.reply_text("Something went wrong..! 🥲")
                     return
                 await temp_msg.delete()
-                snt_msgs = []
-                for msg in messages:
-                    original_caption = msg.caption.html if msg.caption else ""
-                    if CUSTOM_CAPTION:
-                        caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
-                    else:
-                        caption = original_caption   
-                    reply_markup = None 
-                    try:    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        await asyncio.sleep(0.5)    
-                        snt_msgs.append(snt_msg)    
-                    except FloodWait as e:  
-                        await asyncio.sleep(e.x)    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode= ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        snt_msgs.append(snt_msg)    
-                    except: 
-                        pass
-                if SECONDS == 0:
-                    return
-                notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
-                await asyncio.sleep(SECONDS)    
-                for snt_msg in snt_msgs:    
-                    try:    
-                        await snt_msg.delete()  
-                    except: 
-                        pass    
-                await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
-                return
+                
+                AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
+                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
+            )
+            if CHNL_BTN:
+                button_name, button_link = await db.get_channel_button_link()
+
+            for idx, msg in enumerate(messages):
+                original_caption = msg.caption.html if msg.caption else ""
+                if CUSTOM_CAPTION and msg.document:
+                    caption = CUSTOM_CAPTION.format(previouscaption=original_caption, filename=msg.document.file_name)
+                elif HIDE_CAPTION and (msg.document or msg.audio):
+                    caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
+                else:
+                    caption = original_caption
+
+                if CHNL_BTN:
+                    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=button_name, url=button_link)]]) if (msg.document or msg.photo or msg.video or msg.audio) else None
+                else:
+                    reply_markup = msg.reply_markup
+
+                try:
+                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
+                    await asyncio.sleep(0.1)
+
+                    if AUTO_DEL:
+                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+                        if idx == len(messages) - 1:
+                            last_message = copied_msg
+
+                except FloodWait as e:
+                    await asyncio.sleep(e.x)
+                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
+                    await asyncio.sleep(0.1)
+
+                    if AUTO_DEL:
+                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+                        if idx == len(messages) - 1:
+                            last_message = copied_msg
+
+            if AUTO_DEL and last_message:
+                asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
+                
             if U_S_E_P:
                 if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
                     await db.update_verify_status(id, is_verified=False)
@@ -158,37 +177,48 @@ async def start_command(client: Client, message: Message):
                     await message.reply_text("Something went wrong..! 🥲")
                     return
                 await temp_msg.delete()
-                snt_msgs = []
-                for msg in messages:
-                    original_caption = msg.caption.html if msg.caption else ""
-                    if CUSTOM_CAPTION:
-                        caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
-                    else:
-                        caption = original_caption  
-                    reply_markup = None 
-                    try:    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        await asyncio.sleep(0.5)    
-                        snt_msgs.append(snt_msg)    
-                    except FloodWait as e:  
-                        await asyncio.sleep(e.x)    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode= ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        snt_msgs.append(snt_msg)    
-                    except: 
-                        pass    
-            try:
-                if snt_msgs:
-                    if SECONDS == 0:
-                        return
-                    notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
-                    await asyncio.sleep(SECONDS)    
-                    for snt_msg in snt_msgs:    
-                        try:    
-                            await snt_msg.delete()  
-                        except: 
-                            pass    
-                    await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
-                    return
+                AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
+                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
+            )
+            if CHNL_BTN:
+                button_name, button_link = await db.get_channel_button_link()
+
+            for idx, msg in enumerate(messages):
+                original_caption = msg.caption.html if msg.caption else ""
+                if CUSTOM_CAPTION and msg.document:
+                    caption = CUSTOM_CAPTION.format(previouscaption=original_caption, filename=msg.document.file_name)
+                elif HIDE_CAPTION and (msg.document or msg.audio):
+                    caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
+                else:
+                    caption = original_caption
+
+                if CHNL_BTN:
+                    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=button_name, url=button_link)]]) if (msg.document or msg.photo or msg.video or msg.audio) else None
+                else:
+                    reply_markup = msg.reply_markup
+
+                try:
+                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
+                    await asyncio.sleep(0.1)
+
+                    if AUTO_DEL:
+                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+                        if idx == len(messages) - 1:
+                            last_message = copied_msg
+
+                except FloodWait as e:
+                    await asyncio.sleep(e.x)
+                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
+                    await asyncio.sleep(0.1)
+
+                    if AUTO_DEL:
+                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+                        if idx == len(messages) - 1:
+                            last_message = copied_msg
+
+            if AUTO_DEL and last_message:
+                asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
+             
             except:
                 newbase64_string = await encode(f"sav-ory-{_string}")
      
