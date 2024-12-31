@@ -32,6 +32,32 @@ def new_user(id):
         }
     }
 
+#links
+async def new_link(hash: str):
+    return {
+        'clicks' : 0,
+        'hash': hash
+    }
+
+async def gen_new_count(hash: str):
+    data = await new_link(hash)
+    await link_data.insert_one(data)
+    return
+
+async def present_hash(hash:str):
+    found = await(link_data.find_one({"hash" : hash}))
+    return bool(found)
+
+async def inc_count(hash: str):
+    data = await link_data.find_one({'hash': hash})
+    clicks = data.get('clicks')
+    await link_data.update_one({'hash': hash}, {'$set': {'clicks': clicks+1}})
+    return
+
+async def get_clicks(hash: str):
+    data = await link_data.find_one({'hash': hash})
+    clicks = data.get('clicks')
+    return clicks
 
 
 class Rohit:
