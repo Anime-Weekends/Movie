@@ -110,31 +110,47 @@ async def start_command(client: Client, message: Message):
                     return
                 await temp_msg.delete()
                 snt_msgs = []
-                for msg in messages:
-                    if bool(CUSTOM_CAPTION) & bool(msg.document):
-                        caption = CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html,    filename=msg.document.file_name)
-                    else:   
-                        caption = "" if not msg.caption else msg.caption.html   
-                    reply_markup = None 
-                    try:    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        await asyncio.sleep(0.5)    
-                        snt_msgs.append(snt_msg)    
-                    except FloodWait as e:  
-                        await asyncio.sleep(e.x)    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode= ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        snt_msgs.append(snt_msg)    
-                    except: 
-                        pass
-                if (SECONDS == 0):
-                    return
-                notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be  deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
-                await asyncio.sleep(SECONDS)    
-                for snt_msg in snt_msgs:    
-                    try:    
-                        await snt_msg.delete()  
-                    except: 
-                        pass    
+                AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
+                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
+            )
+            if CHNL_BTN:
+                button_name, button_link = await db.get_channel_button_link()
+
+            for idx, msg in enumerate(messages):
+                original_caption = msg.caption.html if msg.caption else ""
+                if CUSTOM_CAPTION and msg.document:
+                    caption = CUSTOM_CAPTION.format(previouscaption=original_caption, filename=msg.document.file_name)
+                elif HIDE_CAPTION and (msg.document or msg.audio):
+                    caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
+                else:
+                    caption = original_caption
+
+                if CHNL_BTN:
+                    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=button_name, url=button_link)]]) if (msg.document or msg.photo or msg.video or msg.audio) else None
+                else:
+                    reply_markup = msg.reply_markup
+
+                try:
+                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
+                    await asyncio.sleep(0.1)
+
+                    if AUTO_DEL:
+                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+                        if idx == len(messages) - 1:
+                            last_message = copied_msg
+
+                except FloodWait as e:
+                    await asyncio.sleep(e.x)
+                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
+                    await asyncio.sleep(0.1)
+
+                    if AUTO_DEL:
+                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+                        if idx == len(messages) - 1:
+                            last_message = copied_msg
+
+            if AUTO_DEL and last_message:
+                asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
                 await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
                 return
             if (U_S_E_P):
@@ -171,34 +187,47 @@ async def start_command(client: Client, message: Message):
                     return
                 await temp_msg.delete()
                 snt_msgs = []
-                for msg in messages:
-                    if bool(CUSTOM_CAPTION) & bool(msg.document):
-                        caption = CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html, filename=msg.document.file_name)
-                    else:   
-                        caption = "" if not msg.caption else msg.caption.html   
-                    reply_markup = None 
-                    try:    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        await asyncio.sleep(0.5)    
-                        snt_msgs.append(snt_msg)    
-                    except FloodWait as e:  
-                        await asyncio.sleep(e.x)    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode= ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                        snt_msgs.append(snt_msg)    
-                    except: 
-                        pass    
-            try:
-                if snt_msgs:
-                    if (SECONDS == 0):
-                        return
-                    notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be  deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
-                    await asyncio.sleep(SECONDS)    
-                    for snt_msg in snt_msgs:    
-                        try:    
-                            await snt_msg.delete()  
-                        except: 
-                            pass    
-                    await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
+                AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
+                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
+            )
+            if CHNL_BTN:
+                button_name, button_link = await db.get_channel_button_link()
+
+            for idx, msg in enumerate(messages):
+                original_caption = msg.caption.html if msg.caption else ""
+                if CUSTOM_CAPTION and msg.document:
+                    caption = CUSTOM_CAPTION.format(previouscaption=original_caption, filename=msg.document.file_name)
+                elif HIDE_CAPTION and (msg.document or msg.audio):
+                    caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
+                else:
+                    caption = original_caption
+
+                if CHNL_BTN:
+                    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=button_name, url=button_link)]]) if (msg.document or msg.photo or msg.video or msg.audio) else None
+                else:
+                    reply_markup = msg.reply_markup
+
+                try:
+                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
+                    await asyncio.sleep(0.1)
+
+                    if AUTO_DEL:
+                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+                        if idx == len(messages) - 1:
+                            last_message = copied_msg
+
+                except FloodWait as e:
+                    await asyncio.sleep(e.x)
+                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
+                    await asyncio.sleep(0.1)
+
+                    if AUTO_DEL:
+                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+                        if idx == len(messages) - 1:
+                            last_message = copied_msg
+
+            if AUTO_DEL and last_message:
+                asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
                     return
             except:
                     newbase64_string = await encode(f"sav-ory-{_string}")
