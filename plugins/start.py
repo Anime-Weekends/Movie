@@ -246,9 +246,9 @@ async def start_command(client: Client, message: Message):
                         return
 try:
     newbase64_string = encode(f"sav-ory-{_string}")
-    if not await present_hash(newbase64_string):
+    if not present_hash(newbase64_string):
         try:
-            await gen_new_count(newbase64_string)
+            gen_new_count(newbase64_string)
         except Exception:
             pass
     clicks = await get_clicks(newbase64_string)
