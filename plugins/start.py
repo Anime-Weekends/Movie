@@ -42,7 +42,7 @@ async def start_command(client: Client, message: Message):
     verify_status = await db.get_verify_status(id)
     if USE_SHORTLINK and (not U_S_E_P):
         for i in range(1):
-            if id is_admin:
+            if is_admin:
                 continue
             if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
                 await db.update_verify_status(id, is_verified=False)
