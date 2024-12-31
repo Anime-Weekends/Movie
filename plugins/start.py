@@ -150,9 +150,8 @@ async def start_command(client: Client, message: Message):
                     id=message.from_user.id
                 ),
                 reply_markup=reply_markup,
-                disable_web_page_preview=True,
-                quote=True
-            )
+            message_effect_id=5104841245755180586  # 🔥
+        )
 
         else:
             verify_status = await db.get_verify_status(id)
@@ -242,7 +241,7 @@ async def not_joined(client: Client, message: Message):
                 id=message.from_user.id
             ),
             reply_markup=InlineKeyboardMarkup(buttons),
-    #message_effect_id=5104841245755180586  # Add the effect ID here
+    message_effect_id=5104841245755180586  # Add the effect ID here
         )
     except Exception as e:
         print(f"Error: {e}")  # Print the error message for debugging
