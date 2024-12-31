@@ -38,9 +38,9 @@ async def start_command(client: Client, message: Message):
         await message.reply("You are the owner! Additional actions can be added here.")
 
     else:
-        if not db.await present_user(id):
+        if not await db.present_user(id):
             try:
-                db.await add_user(id)
+                await db.add_user(id)
             except:
                 pass
 
