@@ -40,10 +40,7 @@ async def start_command(client: Client, message: Message):
     if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
         await db.update_verify_status(id, is_verified=False)
 
-    is_premium = await is_premium_user(id)
-
-    logging.info(f"Verify status: {verify_status}")
-    logging.info(f"Is premium: {is_premium}")
+    
 
     try:
         base64_string = text.split(" ", 1)[1]
