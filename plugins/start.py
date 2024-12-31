@@ -368,14 +368,17 @@ async def add_user_premium_command(client: Bot, message: Message):
             return  # Exit if there's an error (e.g., timeout)
 
         if user_id_message.text == "/cancel":
-            await user_id_message.edit("Cancelled 😉!")  # Notify about the cancellation
+            await client.send_message(chat_id=message.chat.id, text="Cancelled 😉!")  # Notify about the cancellation
             return
 
         try:
             await Bot.get_users(user_ids=user_id_message.text, self=client)
             break  # Exit the loop if the user ID is valid
         except:
-            await user_id_message.edit("❌ Error 😖\n\nThe user ID is incorrect.")  # Ask for re-entry
+            await client.send_message(
+                chat_id=message.chat.id, 
+                text="❌ Error 😖\n\nThe user ID is incorrect."  # Notify about the error
+            )
             continue
 
     user_id = int(user_id_message.text)  # Extract the user ID
@@ -401,7 +404,7 @@ async def add_user_premium_command(client: Bot, message: Message):
             return  # Exit if there's an error (e.g., timeout)
 
         if not int(timeforprem_message.text) in [1, 2, 3, 4, 5]:
-            await message.reply("You have given an incorrect input. 😖")
+            await client.send_message(chat_id=message.chat.id, text="You have given an incorrect input. 😖")
             continue
         else:
             break
@@ -420,7 +423,7 @@ async def add_user_premium_command(client: Bot, message: Message):
     # Attempt to update the user's premium status
     try:
         await increasepremtime(user_id, timeforprem)  # Update the database/backend
-        await message.reply("Premium added! 🤫")  # Notify the admin
+        await client.send_message(chat_id=message.chat.id, text="Premium added! 🤫")  # Notify the admin
 
         # Notify the target user
         await client.send_message(
@@ -429,7 +432,7 @@ async def add_user_premium_command(client: Bot, message: Message):
         )
     except Exception as e:
         print(e)
-        await message.reply("Some error occurred.\nCheck logs.. 😖\nIf the user received the premium message, then it's okay.")
-
-    
-        
+        await client.send_message(
+            chat_id=message.chat.id, 
+            text="Some error occurred.\nCheck logs.. 😖\nIf the user received the premium message, then it's okay."
+        )
