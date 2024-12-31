@@ -505,7 +505,7 @@ if USE_PAYMENT:
                 await Bot.get_users(user_ids=user_id.text, self=client)
                 break
             except:
-                await user_id.edit("❌ Error 😖\n\nThe admin id is incorrect.", quote = True)
+                await user_id.edit("❌ Error 😖\n\nThe admin id is incorrect.")
                 continue
         user_id = int(user_id.text)
         while True:
