@@ -236,7 +236,7 @@ async def start_command(client: Client, message: Message):
                 if AUTO_DEL and last_message:
                     asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1])) 
                     return
-            except:
+             except:
                     newbase64_string = await encode(f"sav-ory-{_string}")
                     if not await present_hash(newbase64_string):
                         try:
