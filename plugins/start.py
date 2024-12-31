@@ -451,7 +451,83 @@ async def restart(client, message):
     except Exception as e:
         print(e)
 
+@Bot.on_message(filters.command('add_prem') & filters.private & is_admin)
+async def add_user_premium_command(client: Bot, message: Message):
+    # Prompt the admin to input the user ID
+    while True:
+        try:
+            user_id_message = await client.ask(
+                text="Enter the ID of the user 🔢\n/cancel to cancel:", 
+                chat_id=message.from_user.id, 
+                timeout=60
+            )
+        except Exception as e:
+            print(e)
+            return  # Exit if there's an error (e.g., timeout)
 
+        if user_id_message.text == "/cancel":
+            await user_id_message.edit("Cancelled 😉!")  # Notify about the cancellation
+            return
+
+        try:
+            await Bot.get_users(user_ids=user_id_message.text, self=client)
+            break  # Exit the loop if the user ID is valid
+        except:
+            await user_id_message.edit("❌ Error 😖\n\nThe user ID is incorrect.")  # Ask for re-entry
+            continue
+
+    user_id = int(user_id_message.text)  # Extract the user ID
+
+    # Prompt the admin to choose the premium duration
+    while True:
+        try:
+            timeforprem_message = await client.ask(
+                text=(
+                    "Enter the duration for the premium subscription:\n"
+                    "Choose correctly, as it's not reversible.\n\n"
+                    "⁕ <code>1</code> for 7 days\n"
+                    "⁕ <code>2</code> for 1 Month\n"
+                    "⁕ <code>3</code> for 3 Months\n"
+                    "⁕ <code>4</code> for 6 Months\n"
+                    "⁕ <code>5</code> for 1 Year 🤑"
+                ), 
+                chat_id=message.from_user.id, 
+                timeout=60
+            )
+        except Exception as e:
+            print(e)
+            return  # Exit if there's an error (e.g., timeout)
+
+        if not int(timeforprem_message.text) in [1, 2, 3, 4, 5]:
+            await message.reply("You have given an incorrect input. 😖")
+            continue
+        else:
+            break
+
+    timeforprem = int(timeforprem_message.text)
+
+    # Map the input to a readable duration string
+    timestring = {
+        1: "7 days",
+        2: "1 month",
+        3: "3 months",
+        4: "6 months",
+        5: "1 year"
+    }[timeforprem]
+
+    # Attempt to update the user's premium status
+    try:
+        await increasepremtime(user_id, timeforprem)  # Update the database/backend
+        await message.reply("Premium added! 🤫")  # Notify the admin
+
+        # Notify the target user
+        await client.send_message(
+            chat_id=user_id,
+            text=f"Update for you\n\nPremium plan of {timestring} has been added to your account. 🤫"
+        )
+    except Exception as e:
+        print(e)
+        await message.reply("Some error occurred.\nCheck logs.. 😖\nIf the user received the premium message, then it's okay.")
 
     
         
