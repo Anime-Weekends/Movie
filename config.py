@@ -67,7 +67,7 @@ FORCE_PIC = os.environ.get("FORCE_PIC", "https://envs.sh/oVJ.jpg")
 CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", "<blockquote><b>ʙʏ @Anime_Weekends</b></blockquote>")
 
 #Collection of pics for Bot // #Optional but atleast one pic link should be replaced if you don't want predefined links
-PICS = (os.environ.get("PICS", "https://envs.sh/4Iq.jpg https://envs.sh/4IW.jpg https://envs.sh/4IB.jpg https://envs.sh/4In.jpg")).split() #Required
+PICS = (os.environ.get("PICS", "https://envs.sh/oVN.jpg https://envs.sh/oVH.jpg https://envs.sh/oVg.jpg https://envs.sh/oVf.jpg")).split() #Required
 
 
 UPI_ID = os.environ.get("UPI_ID", "clementrajadurai@okhdfcbank")
