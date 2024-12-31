@@ -10,7 +10,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 #bot stats
-BOT_STATS_TEXT = os.environ.get("BOTS_STATS_TEXT","<b>BOT UPTIME 🌺</b>\n{uptime}")
+BOT_STATS_TEXT = os.environ.get("BOTS_STATS_TEXT","<b>BOT UPTIME 🍀</b>\n{uptime}")
 #send custom message when user interact with bot
 USER_REPLY_TEXT = os.environ.get("USER_REPLY_TEXT", "Don't send me messages directly I'm only File Share bot! 📌")
 
@@ -64,7 +64,7 @@ START_PIC = os.environ.get("START_PIC", "https://envs.sh/oV8.jpg")
 FORCE_PIC = os.environ.get("FORCE_PIC", "https://envs.sh/oVJ.jpg")
 
 #set your Custom Caption here, Keep None for Disable Custom Caption
-CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", "<b>ʙʏ @Javpostr</b>")
+CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", "<b>ʙʏ @Anime_Weekends</b>")
 
 #Collection of pics for Bot // #Optional but atleast one pic link should be replaced if you don't want predefined links
 PICS = (os.environ.get("PICS", "https://envs.sh/4Iq.jpg https://envs.sh/4IW.jpg https://envs.sh/4IB.jpg https://envs.sh/4In.jpg")).split() #Required
