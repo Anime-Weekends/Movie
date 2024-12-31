@@ -155,7 +155,7 @@ async def start_command(client: Client, message: Message):
 
         else:
             verify_status = await db.get_verify_status(id)
-            if IS_VERIFY and not verify_status['is_verified']:
+            if not verify_status['is_verified']:
                 short_url = f"api.shareus.io"
                 full_tut_url = f"https://t.me/neprosz/3"
                 token = ''.join(random.choices(rohit.ascii_letters + string.digits, k=10))
