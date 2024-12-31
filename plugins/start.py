@@ -104,7 +104,6 @@ async def start_command(client: Client, message: Message):
                     return
                 await temp_msg.delete()
 
-                CHNL_BTN = None
                 
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
                 db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
@@ -181,7 +180,6 @@ async def start_command(client: Client, message: Message):
                     await message.reply_text("Something went wrong..! 🥲")
                     return
                 await temp_msg.delete()
-                CHNL_BTN = None
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
                 db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
             )
