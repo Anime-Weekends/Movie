@@ -108,7 +108,7 @@ async def start_command(client: Client, message: Message):
                 CHNL_BTN = None
                 
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
-                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channelButton_link(), db.get_protect_content()
+                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
             )
             if CHNL_BTN:
                 button_name, button_link = await db.get_channel_button_link()
@@ -184,7 +184,7 @@ async def start_command(client: Client, message: Message):
                 await temp_msg.delete()
                 CHNL_BTN = None
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
-                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channelButton_link(), db.get_protect_content()
+                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
             )
             if CHNL_BTN:
                 button_name, button_link = await db.get_channel_button_link()
