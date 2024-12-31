@@ -452,64 +452,6 @@ async def restart(client, message):
         print(e)
 
 
-if USE_PAYMENT:
-    @Bot.on_message(filters.command('add_prem') & filters.private & is_admin)
-    async def add_user_premium_command(client: Bot, message: Message):
-        # Store the message sent to the user when asking for the user ID
-        while True:
-            try:
-                user_id_message = await client.ask(text="Enter id of user 🔢\n /cancel to cancel : ", chat_id=message.from_user.id, timeout=60)
-            except Exception as e:
-                print(e)
-                return  
-            if user_id_message.text == "/cancel":
-                await user_id_message.edit("Cancelled 😉!")  # Edit the correct message
-                return
-            try:
-                await Bot.get_users(user_ids=user_id_message.text, self=client)
-                break
-            except:
-                await user_id_message.edit("❌ Error 😖\n\nThe user id is incorrect.")  # Edit the correct message
-                continue
-        
-        user_id = int(user_id_message.text)  # Use user_id_message.text to get the ID
-        while True:
-            try:
-                timeforprem_message = await client.ask(
-                    text="Enter the amount of time you want to provide the premium \nChoose correctly. Its not reversible.\n\n⁕ <code>1</code> for 7 days.\n⁕ <code>2</code> for 1 Month\n⁕ <code>3</code> for 3 Month\n⁕ <code>4</code> for 6 Month\n⁕ <code>5</code> for 1 year.🤑", 
-                    chat_id=message.from_user.id, timeout=60
-                )
-            except Exception as e:
-                print(e)
-                return
-            if not int(timeforprem_message.text) in [1, 2, 3, 4, 5]:
-                await message.reply("You have given wrong input. 😖")
-                continue
-            else:
-                break
-        
-        timeforprem = int(timeforprem_message.text)
-        if timeforprem == 1:
-            timestring = "7 days"
-        elif timeforprem == 2:
-            timestring = "1 month"
-        elif timeforprem == 3:
-            timestring = "3 months"
-        elif timeforprem == 4:
-            timestring = "6 months"
-        elif timeforprem == 5:
-            timestring = "1 year"
-        
-        try:
-            await increasepremtime(user_id, timeforprem)
-            await message.reply("Premium added! 🤫")
-            await client.send_message(
-                chat_id=user_id,
-                text=f"Update for you\n\nPremium plan of {timestring} added to your account. 🤫",
-            )
-        except Exception as e:
-            print(e)
-            await message.reply("Some error occurred.\nCheck logs.. 😖\nIf you got premium added message then it's ok.")
-        return
 
+    
         
