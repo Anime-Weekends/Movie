@@ -156,17 +156,7 @@ def get_readable_time(seconds: int) -> str:
     up_time += ":".join(time_list)
     return up_time
 
-async def get_verify_status(user_id):
-    verify = await db_verify_status(user_id)
-    return verify
 
-async def update_verify_status(user_id, verify_token="", is_verified=False, verified_time=0, link=""):
-    current = await db_verify_status(user_id)
-    current['verify_token'] = verify_token
-    current['is_verified'] = is_verified
-    current['verified_time'] = verified_time
-    current['link'] = link
-    await db_update_verify_status(user_id, current)
 
 
 async def get_shortlink(url, api, link):
@@ -194,7 +184,7 @@ async def increasepremtime(user_id : int, timeforprem : int):
         realtime = 86400*31*6
     elif timeforprem == 5:
         realtime = 86400*31*12
-    await update_verify_status(user_id, is_verified=True, verified_time=time.time()+realtime)
+    await db.update_verify_status(user_id, is_verified=True, verified_time=time.time()+realtime)
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #Check user subscription in Channels
