@@ -34,7 +34,7 @@ async def start_command(client: Client, message: Message):
     PROTECT_MODE = False
     last_message = None
     messages = []
-    if not await dbpresent_user(id):
+    if not await db.present_user(id):
         try:
             await db.add_user(id)
         except:
