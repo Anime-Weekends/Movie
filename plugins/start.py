@@ -40,7 +40,7 @@ async def start_command(client: Client, message: Message):
         except:
             pass
     verify_status = await db.get_verify_status(id)
-    if USE_SHORTLINK and U_S_E_P:
+    if USE_SHORTLINK and (U_S_E_P):
         for i in range(1):
             if is_admin:
                 continue
@@ -158,7 +158,7 @@ async def start_command(client: Client, message: Message):
                 if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
                     await db.update_verify_status(id, is_verified=False)
 
-            if (not U_S_E_P) or (is_admin) or (verify_status['is_verified']):
+            if (U_S_E_P) or (is_admin) or (verify_status['is_verified']):
                 if len(argument) == 3:
                     try:
                         start = int(int(argument[1]) / abs(client.db_channel.id))
@@ -260,7 +260,7 @@ async def start_command(client: Client, message: Message):
                     return
 
     for i in range(1):
-        if USE_SHORTLINK and (not U_S_E_P):
+        if USE_SHORTLINK and (U_S_E_P):
             if USE_SHORTLINK : 
                 if not is_admin:
                     try:
@@ -287,7 +287,7 @@ async def start_command(client: Client, message: Message):
             ),
             reply_markup=reply_markup)
         return
-    if USE_SHORTLINK and U_S_E_P: 
+    if USE_SHORTLINK and (U_S_E_P): 
         if is_admin:
             return
         verify_status = await db.get_verify_status(id)
