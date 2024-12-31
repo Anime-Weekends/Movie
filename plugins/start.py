@@ -40,7 +40,7 @@ async def start_command(client: Client, message: Message):
         except:
             pass
     verify_status = await db.get_verify_status(id)
-    if USE_SHORTLINK and (not U_S_E_P):
+    if USE_SHORTLINK and U_S_E_P:
         for i in range(1):
             if is_admin:
                 continue
@@ -276,8 +276,9 @@ async def start_command(client: Client, message: Message):
                 ]
             ]
         )
-        await message.reply_text(
-            text=START_MSG.format(
+        await message.reply_photo(
+            photo=START_PIC,
+            caption=START_MSG.format(
                 first=message.from_user.first_name,
                 last=message.from_user.last_name,
                 username=None if not message.from_user.username else '@' + message.from_user.username,
@@ -289,7 +290,7 @@ async def start_command(client: Client, message: Message):
             quote=True
         )
         return
-    if USE_SHORTLINK and (not U_S_E_P): 
+    if USE_SHORTLINK and U_S_E_P: 
         if is_admin:
             return
         verify_status = await db.get_verify_status(id)
