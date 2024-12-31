@@ -35,12 +35,15 @@ async def start_command(client: Client, message: Message):
     PROTECT_MODE = False
     last_message = None
     messages = []
+
     if not await db.present_user(id):
         try:
             await db.add_user(id)
         except:
             pass
+
     verify_status = await db.get_verify_status(id)
+
     if USE_SHORTLINK and (not U_S_E_P):
         for i in range(1):
             if is_admin:
@@ -58,6 +61,7 @@ async def start_command(client: Client, message: Message):
                     f"Your token successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)} ⏳",
                     reply_markup=reply_markup, protect_content=False, quote=True
                 )
+    
     if len(message.text) > 7:
         for i in range(1):
             if USE_SHORTLINK and (not U_S_E_P):
@@ -109,6 +113,7 @@ async def start_command(client: Client, message: Message):
                     await message.reply_text("Something went wrong..! 🥲")
                     return
                 await temp_msg.delete()
+
                 snt_msgs = []
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
                     db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
@@ -241,47 +246,39 @@ async def start_command(client: Client, message: Message):
                     if AUTO_DEL and last_message:
                         asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
                         return
-try:
-    newbase64_string = await encode(f"sav-ory-{_string}")
-    if not await present_hash(newbase64_string):
-        try:
-            await gen_new_count(newbase64_string)
-        except Exception:
-            pass
-    newLink = f"https://t.me/{client.username}?start={newbase64_string}"
-    link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'{newLink}')
+                    try:
+                        newbase64_string = await encode(f"sav-ory-{_string}")
+                        if not await present_hash(newbase64_string):
+                            try:
+                                await gen_new_count(newbase64_string)
+                            except Exception:
+                                pass
+                        newLink = f"https://t.me/{client.username}?start={newbase64_string}"
+                        link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'{newLink}')
 
-    if USE_PAYMENT:
-        btn = [
-            [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ 👆", url=link),
-             InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ 👆', url=TUT_VID)],
-            [InlineKeyboardButton("ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ", callback_data="buy_prem")]
-        ]
-    else:
-        btn = [
-            [InlineKeyboardButton("ᴄʟɪᴄᴋ ʜᴇʀᴇ 👆", url=link)],
-            [InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ 👆', url=TUT_VID)]
-        ]
+                        if USE_PAYMENT:
+                            btn = [
+                                [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ 👆", url=link),
+                                 InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ 👆', url=TUT_VID)],
+                                [InlineKeyboardButton("ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ", callback_data="buy_prem")]
+                            ]
+                        else:
+                            btn = [
+                                [InlineKeyboardButton("ᴄʟɪᴄᴋ ʜᴇʀᴇ 👆", url=link)],
+                                [InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ 👆', url=TUT_VID)]
+                            ]
 
-    await message.reply(
-        f"Here is your link 👇.", 
-        reply_markup=InlineKeyboardMarkup(btn), 
-        protect_content=False, 
-        quote=True
-    )
-    return
-except Exception:
-    pass
+                        await message.reply(
+                            f"Here is your link 👇.", 
+                            reply_markup=InlineKeyboardMarkup(btn), 
+                            protect_content=False, 
+                            quote=True
+                        )
+                        return
+                    except Exception:
+                        pass
 
-for i in range(1):
-    if USE_SHORTLINK and (not U_S_E_P):
-        if USE_SHORTLINK: 
-            if not is_admin:
-                try:
-                    if not verify_status['is_verified']:
-                        continue
-                except:
-                    continue
+    # Default handling when no special logic applies
     reply_markup = InlineKeyboardMarkup(
         [
             [
@@ -290,6 +287,7 @@ for i in range(1):
             ]
         ]
     )
+
     await message.reply_text(
         text=START_MSG.format(
             first=message.from_user.first_name,
@@ -304,36 +302,7 @@ for i in range(1):
     )
     return
 
-if USE_SHORTLINK and (not U_S_E_P): 
-    if is_admin:
-        return
-    verify_status = await db.get_verify_status(id)
-    if not verify_status['is_verified']:
-        token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-        await db.update_verify_status(id, verify_token=token, link="")
-        link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'https://telegram.dog/{client.username}?start=verify_{token}')
-        
-        if USE_PAYMENT:
-            btn = [
-                [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ 👆", url=link),
-                 InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ 👆', url=TUT_VID)],
-                [InlineKeyboardButton("ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ", callback_data="buy_prem")]
-            ]
-        else:
-            btn = [
-                [InlineKeyboardButton("ᴄʟɪᴄᴋ ʜᴇʀᴇ 👆", url=link)],
-                [InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ 👆', url=TUT_VID)]
-            ]
-        
-        await message.reply(
-            f"Your Ads token is expired, refresh your token and try again. \n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for {get_exp_time(VERIFY_EXPIRE)} after passing the ad",
-            reply_markup=InlineKeyboardMarkup(btn), 
-            protect_content=False, 
-            quote=True
-        )
-        return
-return
-
+    
     
 #=====================================================================================#
 
