@@ -79,9 +79,9 @@ async def cb_handler(client: Bot, query: CallbackQuery):
     elif data == "about":
         await query.message.edit_text(
             text=(
-                f"<b>○ Movie Weekends: <a href='https://t.me/Movies_Weekends'>Movie</a>\n"
+                f"<b><blockquote>○ Movie Weekends: <a href='https://t.me/Movies_Weekends'>Movie</a>\n"
                 f"○ Anime Weekends: <a href='https://t.me/Anime_Weekends'>Anime</a>\n"
-                f"○ Owner : <a href='https://t.me/JeffySama'>JeffySama</a>"
+                f"○ Owner : <a href='https://t.me/JeffySama'>JeffySama</a></blockquote>"
             ),
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton('⬅️ Bᴀᴄᴋ', callback_data='start'), InlineKeyboardButton('Cʟᴏsᴇ ✖️', callback_data='close')]
