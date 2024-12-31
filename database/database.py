@@ -12,7 +12,12 @@ import motor.motor_asyncio  # Import the correct module
 
 dbclient = pymongo.MongoClient(DB_URL)
 database = dbclient[DB_NAME]
-
+collection = database['premium-users']
+
+# Check if the user is a premium user
+async def is_premium_user(user_id):
+    user = await collection.find_one({"user_id": user_id})  # Async query
+    return user is not None
 
 default_verify = {
     'is_verified': False,
