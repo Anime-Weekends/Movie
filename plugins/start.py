@@ -160,7 +160,7 @@ async def start_command(client: Client, message: Message):
                 full_tut_url = f"https://t.me/neprosz/3"
                 token = ''.join(random.choices(rohit.ascii_letters + string.digits, k=10))
                 await db.update_verify_status(id, verify_token=token, link="")
-                link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'https://telegram.dog/{client.username}?start=verify_{token}')
+                link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY,f'https://telegram.dog/{client.username}?start=verify_{token}')
                 btn = [
                     [InlineKeyboardButton("Click here", url=link)],
                     [InlineKeyboardButton('How to use the bot', url=full_tut_url)]
