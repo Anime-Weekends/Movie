@@ -79,9 +79,9 @@ async def cb_handler(client: Bot, query: CallbackQuery):
     elif data == "about":
         await query.message.edit_text(
             text=(
-                f"<b>○ Updates : <a href='https://t.me/rohit_1888'>Rohit</a>\n"
-                f"○ Language : <code>Python3</code>\n"
-                f"○ Library : <a href='https://docs.pyrogram.org/'>Pyrogram asyncio {__version__}</a>"
+                f"<b>○ Movie Weekends: <a href='https://t.me/Movies_Weekends'>Movie</a>\n"
+                f"○ Anime Weekends: <a href='https://t.me/Anime_Weekends'>Anime</a>\n"
+                f"○ Owner : <a href='https://t.me/JeffySama'>JeffySama</a>"
             ),
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton('⬅️ Bᴀᴄᴋ', callback_data='start'), InlineKeyboardButton('Cʟᴏsᴇ ✖️', callback_data='close')]
@@ -110,10 +110,10 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                 [
                     [
                         InlineKeyboardButton(
-                            "ADMIN 24/7", url=(SCREENSHOT_URL)
+                            "Send Here", url=(SCREENSHOT_URL)
                         )
                     ],
-                    [InlineKeyboardButton("🔒 Close", callback_data="close")],
+                    [InlineKeyboardButton("🍀 Close", callback_data="close")],
                 ]
             )
         )
@@ -162,7 +162,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                             )
             ),
             reply_markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton('🤖 Aʙᴏᴜᴛ ᴍᴇ', callback_data='about'), InlineKeyboardButton('Sᴇᴛᴛɪɴɢs ⚙️', callback_data='setting')]
+                [InlineKeyboardButton('Aʙᴏᴜᴛ ᴍᴇ', callback_data='about'), InlineKeyboardButton('Sᴇᴛᴛɪɴɢs', callback_data='setting')]
             ]),
         )
 
