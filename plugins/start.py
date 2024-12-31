@@ -23,15 +23,6 @@ from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid
 from datetime import datetime, timedelta
 from pytz import timezone
 
-app = Client("my_bot")
-
-@app.on_message(filters.command("start"))
-async def start_handler(client, message):
-    await message.reply("Hello, this is an asynchronous response!")
-
-app.run()
-
-
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
