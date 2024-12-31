@@ -187,70 +187,85 @@ async def start_command(client: Client, message: Message):
                 await temp_msg.delete()
                 snt_msgs = []
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
-                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
-            )
-            if CHNL_BTN:
-                button_name, button_link = await db.get_channel_button_link()
+    db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
+)
 
-            for idx, msg in enumerate(messages):
-                original_caption = msg.caption.html if msg.caption else ""
-                if CUSTOM_CAPTION and msg.document:
-                    caption = CUSTOM_CAPTION.format(previouscaption=original_caption, filename=msg.document.file_name)
-                elif HIDE_CAPTION and (msg.document or msg.audio):
-                    caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
-                else:
-                    caption = original_caption
+if CHNL_BTN:
+    button_name, button_link = await db.get_channel_button_link()
 
-                if CHNL_BTN:
-                    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=button_name, url=button_link)]]) if (msg.document or msg.photo or msg.video or msg.audio) else None
-                else:
-                    reply_markup = msg.reply_markup
+for idx, msg in enumerate(messages):
+    original_caption = msg.caption.html if msg.caption else ""
+    if CUSTOM_CAPTION and msg.document:
+        caption = CUSTOM_CAPTION.format(previouscaption=original_caption, filename=msg.document.file_name)
+    elif HIDE_CAPTION and (msg.document or msg.audio):
+        caption = f"{original_caption}\n\n{CUSTOM_CAPTION}"
+    else:
+        caption = original_caption
 
-                try:
-                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
-                    await asyncio.sleep(0.1)
+    if CHNL_BTN:
+        reply_markup = InlineKeyboardMarkup(
+            [[InlineKeyboardButton(text=button_name, url=button_link)]]
+        ) if (msg.document or msg.photo or msg.video or msg.audio) else None
+    else:
+        reply_markup = msg.reply_markup
 
-                    if AUTO_DEL:
-                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
-                        if idx == len(messages) - 1:
-                            last_message = copied_msg
+    try:
+        copied_msg = await msg.copy(
+            chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE
+        )
+        await asyncio.sleep(0.1)
 
-                except FloodWait as e:
-                    await asyncio.sleep(e.x)
-                    copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
-                    await asyncio.sleep(0.1)
+        if AUTO_DEL:
+            asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+            if idx == len(messages) - 1:
+                last_message = copied_msg
 
-                    if AUTO_DEL:
-                        asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
-                        if idx == len(messages) - 1:
-                            last_message = copied_msg
+    except FloodWait as e:
+        await asyncio.sleep(e.x)
+        copied_msg = await msg.copy(
+            chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE
+        )
+        await asyncio.sleep(0.1)
 
-            if AUTO_DEL and last_message:
-                asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
-                    return
-                try:
-                    newbase64_string = await encode(f"sav-ory-{_string}")
-                    if not await present_hash(newbase64_string):
-                        try:
-                            await gen_new_count(newbase64_string)
-                        except Exception:
-                            pass
-                    clicks = await get_clicks(newbase64_string)
-                    newLink = f"https://t.me/{client.username}?start={newbase64_string}"
-                    link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY,f'{newLink}')
-                    if USE_PAYMENT:
-                        btn = [
-                        [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ 👆", url=link),
-                        InlineKeyboardButton(' ᴛᴜᴛᴏʀɪᴀʟ👆', url=TUT_VID)],
-                        [InlineKeyboardButton("ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ", callback_data="buy_prem")]
-                        ]
-                    else:
-                        btn = [
-                        [InlineKeyboardButton("ᴄʟɪᴄᴋ ʜᴇʀᴇ 👆", url=link)],
-                        [InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ 👆', url=TUT_VID)]
-                        ]
-                    await message.reply(f"Here is your link 👇.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
-                    return
+        if AUTO_DEL:
+            asyncio.create_task(delete_message(copied_msg, DEL_TIMER))
+            if idx == len(messages) - 1:
+                last_message = copied_msg
+
+if AUTO_DEL and last_message:
+    asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
+    return
+
+try:
+    newbase64_string = await encode(f"sav-ory-{_string}")
+    if not await present_hash(newbase64_string):
+        try:
+            await gen_new_count(newbase64_string)
+        except Exception:
+            pass
+    clicks = await get_clicks(newbase64_string)
+    newLink = f"https://t.me/{client.username}?start={newbase64_string}"
+    link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY, f'{newLink}')
+    
+    if USE_PAYMENT:
+        btn = [
+            [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ 👆", url=link),
+             InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ 👆', url=TUT_VID)],
+            [InlineKeyboardButton("ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ", callback_data="buy_prem")]
+        ]
+    else:
+        btn = [
+            [InlineKeyboardButton("ᴄʟɪᴄᴋ ʜᴇʀᴇ 👆", url=link)],
+            [InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ 👆', url=TUT_VID)]
+        ]
+    
+    await message.reply(
+        f"Here is your link 👇.", 
+        reply_markup=InlineKeyboardMarkup(btn), 
+        protect_content=False, 
+        quote=True
+    )
+    return
 
     for i in range(1):
         if USE_SHORTLINK and (not U_S_E_P):
