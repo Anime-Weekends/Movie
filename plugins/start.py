@@ -23,11 +23,10 @@ from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid
 from datetime import datetime, timedelta
 from pytz import timezone
 
-
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    # Default initialization to avoid unbound errors
+    # Default initialization
     AUTO_DEL = False
     DEL_TIMER = 0
     HIDE_CAPTION = False
@@ -62,11 +61,13 @@ async def start_command(client: Client, message: Message):
                     reply_markup=reply_markup, protect_content=False, quote=True
                 )
     
-    if len(message.text) > 7:
+    # Check if there are arguments provided in the message text
+    if len(message.text) > 7:  # Arguments exist to retrieve messages
+        # Process message retrieval
         for i in range(1):
             if USE_SHORTLINK and (not U_S_E_P):
                 if USE_SHORTLINK: 
-                    if id not in ADMINS:
+                    if not is_admin:
                         try:
                             if not verify_status['is_verified']:
                                 continue
@@ -78,6 +79,8 @@ async def start_command(client: Client, message: Message):
                 return
             _string = await decode(base64_string)
             argument = _string.split("-")
+            
+            # Continue if the arguments are valid
             if (len(argument) == 5) or (len(argument) == 4):
                 if not await present_hash(base64_string):
                     try:
@@ -114,6 +117,7 @@ async def start_command(client: Client, message: Message):
                     return
                 await temp_msg.delete()
 
+                # Proceed with sending the retrieved messages
                 snt_msgs = []
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
                     db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
@@ -167,6 +171,7 @@ async def start_command(client: Client, message: Message):
                     if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
                         await db.update_verify_status(id, is_verified=False)
 
+                # If there are more arguments (like for the next batch of messages)
                 if (not U_S_E_P) or (is_admin) or (verify_status['is_verified']):
                     if len(argument) == 3:
                         try:
@@ -277,30 +282,19 @@ async def start_command(client: Client, message: Message):
                         return
                     except Exception:
                         pass
-
-    # Default handling when no special logic applies
-    reply_markup = InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton("😊 ᴀʙᴏᴜᴛ ᴍᴇ", callback_data="about"),
-                InlineKeyboardButton("🔒 ᴄʟᴏsᴇ", callback_data="close")
-            ]
-        ]
-    )
-
-    await message.reply_text(
-        text=START_MSG.format(
-            first=message.from_user.first_name,
-            last=message.from_user.last_name,
-            username=None if not message.from_user.username else '@' + message.from_user.username,
-            mention=message.from_user.mention,
-            id=message.from_user.id
-        ),
-        reply_markup=reply_markup,
-        disable_web_page_preview=True,
-        quote=True
-    )
-    return
+    else:  # If no arguments provided
+        # Send the start message if no messages are retrieved
+        await message.reply_text(
+            text=START_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name,
+                username=None if not message.from_user.username else '@' + message.from_user.username,
+                mention=message.from_user.mention,
+                id=message.from_user.id
+            ),
+            disable_web_page_preview=True,
+            quote=True
+        )
 
     
     
