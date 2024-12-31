@@ -150,8 +150,7 @@ async def start_command(client: Client, message: Message):
                             last_message = copied_msg
 
             if AUTO_DEL and last_message:
-                asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
-                await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
+                asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))  
                 return
             if (U_S_E_P):
                 if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
