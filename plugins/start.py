@@ -26,6 +26,7 @@ from pytz import timezone
 
 
 
+
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
@@ -104,11 +105,14 @@ async def start_command(client: Client, message: Message):
                     return
                 await temp_msg.delete()
 
+                CHNL_BTN = None
                 
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
-                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_protect_content()
+                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
             )
-            
+            if CHNL_BTN:
+                button_name, button_link = await db.get_channel_button_link()
+
             for idx, msg in enumerate(messages):
                 original_caption = msg.caption.html if msg.caption else ""
                 if CUSTOM_CAPTION and msg.document:
@@ -118,8 +122,10 @@ async def start_command(client: Client, message: Message):
                 else:
                     caption = original_caption
 
-                
-                reply_markup = msg.reply_markup
+                if CHNL_BTN:
+                    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=button_name, url=button_link)]]) if (msg.document or msg.photo or msg.video or msg.audio) else None
+                else:
+                    reply_markup = msg.reply_markup
 
                 try:
                     copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
@@ -176,9 +182,12 @@ async def start_command(client: Client, message: Message):
                     await message.reply_text("Something went wrong..! 🥲")
                     return
                 await temp_msg.delete()
+                CHNL_BTN = None
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
-                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_protect_content()
+                db.get_auto_delete(), db.get_del_timer(), db.get_hide_caption(), db.get_channel_button(), db.get_protect_content()
             )
+            if CHNL_BTN:
+                button_name, button_link = await db.get_channel_button_link()
 
             for idx, msg in enumerate(messages):
                 original_caption = msg.caption.html if msg.caption else ""
@@ -189,7 +198,10 @@ async def start_command(client: Client, message: Message):
                 else:
                     caption = original_caption
 
-                reply_markup = msg.reply_markup
+                if CHNL_BTN:
+                    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=button_name, url=button_link)]]) if (msg.document or msg.photo or msg.video or msg.audio) else None
+                else:
+                    reply_markup = msg.reply_markup
 
                 try:
                     copied_msg = await msg.copy(chat_id=id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_MODE)
