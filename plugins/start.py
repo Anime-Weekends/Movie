@@ -110,7 +110,8 @@ async def start_command(client: Client, message: Message):
             )
             if CHNL_BTN:
                 button_name, button_link = await db.get_channel_button_link()
-
+            else:
+                CHNL_BTN = None
             for idx, msg in enumerate(messages):
                 original_caption = msg.caption.html if msg.caption else ""
                 if CUSTOM_CAPTION and msg.document:
@@ -185,6 +186,8 @@ async def start_command(client: Client, message: Message):
             )
             if CHNL_BTN:
                 button_name, button_link = await db.get_channel_button_link()
+            else:
+                 CHNL_BTN = None
 
             for idx, msg in enumerate(messages):
                 original_caption = msg.caption.html if msg.caption else ""
