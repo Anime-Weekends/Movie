@@ -245,7 +245,7 @@ async def start_command(client: Client, message: Message):
                         asyncio.create_task(auto_del_notification(client.username, last_message, DEL_TIMER, message.command[1]))
                         return
 try:
-    newbase64_string = await encode(f"sav-ory-{_string}")
+    newbase64_string = encode(f"sav-ory-{_string}")
     if not await present_hash(newbase64_string):
         try:
             await gen_new_count(newbase64_string)
