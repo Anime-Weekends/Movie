@@ -85,7 +85,7 @@ async def start_command(client: Client, message: Message):
                     ids = [int(int(argument[1]) / abs(client.db_channel.id))]
                 except:
                     return
-            temp_msg = await message.reply("Please wait...")
+            temp_msg = await message.reply("```こんにちは ❤```")
             try:
                 messages = await get_messages(client, ids)
             except:
@@ -254,10 +254,10 @@ async def gen_link_encoded(client: Bot, message: Message):
         hash = await client.ask(text="Enter the code here... \n /cancel to cancel the operation",chat_id = message.from_user.id, timeout=60)
     except Exception as e:
         print(e)
-        await hash.reply(f"😔 some error occurred {e}")
+        await hash.reply(f"<blockquote>😔 some error occurred {e}</blockquote>")
         return
     if hash.text == "/cancel":
-        await hash.reply("Cancelled 😉!")
+        await hash.reply("<blockquote>Cancelled 😉!</blockquote>")
         return
     link = f"https://t.me/{client.username}?start={hash.text}"
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎉 Click Here ", url=link)]])
@@ -325,7 +325,7 @@ async def auth_command(client: Bot, message: Message):
         text=f"Message for @{OWNER_TAG}\n<code>{message.from_user.id}</code>\n/add_admin <code>{message.from_user.id}</code> 🤫",
     )
 
-    await message.reply("Please wait for verification from the owner. 🫣")
+    await message.reply("<blockquote>Please wait for verification from the owner. 🫣</blockquote>")
     return
 
 
@@ -333,17 +333,17 @@ async def auth_command(client: Bot, message: Message):
 @Bot.on_message(filters.command('ping')  & filters.private)
 async def check_ping_command(client: Bot, message: Message):
     start_t = time.time()
-    rm = await message.reply_text("Pinging....", quote=True)
+    rm = await message.reply_text("<blockquote>Pinging....</blockquote>", quote=True)
     end_t = time.time()
     time_taken_s = (end_t - start_t) * 1000
-    await rm.edit(f"Ping 🔥!\n{time_taken_s:.3f} ms")
+    await rm.edit(f"<blockquote>Ping 🔥!</blockquote>\n<blockquote>{time_taken_s:.3f} ms</blockquote>")
     return
 
 
 @Bot.on_message(filters.private & filters.command('restart') & filters.user(OWNER_ID))
 async def restart(client, message):
     msg = await message.reply_text(
-        text="<i>Trying To Restarting.....</i>",
+        text="<i><blockquote>Trying To Restarting.....</blockquote></i>",
         quote=True
     )
     await asyncio.sleep(5)
@@ -359,7 +359,7 @@ async def add_user_premium_command(client: Bot, message: Message):
     while True:
         try:
             user_id_message = await client.ask(
-                text="Enter the ID of the user 🔢\n/cancel to cancel:", 
+                text="<blockquote>Enter the ID of the user \n/cancel to cancel:</blockquote>", 
                 chat_id=message.from_user.id, 
                 timeout=60
             )
@@ -368,7 +368,7 @@ async def add_user_premium_command(client: Bot, message: Message):
             return  # Exit if there's an error (e.g., timeout)
 
         if user_id_message.text == "/cancel":
-            await client.send_message(chat_id=message.chat.id, text="Cancelled 😉!")  # Notify about the cancellation
+            await client.send_message(chat_id=message.chat.id, text="<blockquote>Cancelled 😉!</blockquote>")  # Notify about the cancellation
             return
 
         try:
@@ -377,7 +377,7 @@ async def add_user_premium_command(client: Bot, message: Message):
         except:
             await client.send_message(
                 chat_id=message.chat.id, 
-                text="❌ Error 😖\n\nThe user ID is incorrect."  # Notify about the error
+                text="<blockquote>❌ Error 😖\n\nThe user ID is incorrect.</blockquote>"  # Notify about the error
             )
             continue
 
@@ -388,13 +388,13 @@ async def add_user_premium_command(client: Bot, message: Message):
         try:
             timeforprem_message = await client.ask(
                 text=(
-                    "Enter the duration for the premium subscription:\n"
+                    "<blockquote>Enter the duration for the premium subscription:\n"
                     "Choose correctly, as it's not reversible.\n\n"
                     "⁕ <code>1</code> for 7 days\n"
                     "⁕ <code>2</code> for 1 Month\n"
                     "⁕ <code>3</code> for 3 Months\n"
                     "⁕ <code>4</code> for 6 Months\n"
-                    "⁕ <code>5</code> for 1 Year 🤑"
+                    "⁕ <code>5</code> for 1 Year 🤑</blockquote>"
                 ), 
                 chat_id=message.from_user.id, 
                 timeout=60
@@ -423,16 +423,16 @@ async def add_user_premium_command(client: Bot, message: Message):
     # Attempt to update the user's premium status
     try:
         await increasepremtime(user_id, timeforprem)  # Update the database/backend
-        await client.send_message(chat_id=message.chat.id, text="Premium added! 🤫")  # Notify the admin
+        await client.send_message(chat_id=message.chat.id, text="<blockquote>Premium added! 🤫</blockquote>")  # Notify the admin
 
         # Notify the target user
         await client.send_message(
             chat_id=user_id,
-            text=f"Update for you\n\nPremium plan of {timestring} has been added to your account. 🤫"
+            text=f"<blockquote>Update for you\n\nPremium plan of {timestring} has been added to your account. 🤫</blockquote>"
         )
     except Exception as e:
         print(e)
         await client.send_message(
             chat_id=message.chat.id, 
-            text="Some error occurred.\nCheck logs.. 😖\nIf the user received the premium message, then it's okay."
+            text="<blockquote>Some error occurred.\nCheck logs.. 😖\nIf the user received the premium message, then it's okay.</blockquote>"
         )
