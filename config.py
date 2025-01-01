@@ -57,7 +57,7 @@ SHORTLINK_API_KEY = os.environ.get("SHORTLINK_API_KEY", "bea2b83467261cec3b811d7
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', "600")) # Add time in seconds
 
 #Tutorial video for the user of your shortner on how to download.
-TUT_VID = os.environ.get("TUT_VID","https://t.me/How_to_Download_7x/32")
+TUT_VID = os.environ.get("TUT_VID","https://t.me/Hoshino_Xbot?start=Z2V0LTE2NjM4MDEwMDAxMDQzNDA")
 
 
 START_PIC = os.environ.get("START_PIC", "https://envs.sh/oV8.jpg")
