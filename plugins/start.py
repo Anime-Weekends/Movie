@@ -162,9 +162,9 @@ async def start_command(client: Client, message: Message):
                 await db.update_verify_status(id, verify_token=token, link="")
                 link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY,f'https://telegram.dog/{client.username}?start=verify_{token}')
                 btn = [
-                [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ👆", url=link),
-                InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ👆', url=TUT_VID)],
-                [InlineKeyboardButton("ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ", callback_data="buy_prem")]
+                [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ 😉", url=link),
+                InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ 🥰', url=TUT_VID)],
+                [InlineKeyboardButton("ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ 😎", callback_data="buy_prem")]
                 ]
                 await message.reply(f"<blockquote>Your Ads token is expired, refresh your token and try again.</blockquote>\n\n<blockquote>Token Timeout: {get_exp_time(VERIFY_EXPIRE)}</blockquote>\n\n<blockquote>What is the token?</blockquote>\n\n<blockquote>This is an ads token. If you pass 1 ad, you can use the bot for 10 Mins after passing the ad.</blockquote>", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
 
